@@ -46,25 +46,25 @@ def get_case_graph(case_id: str):
     nodes = []
     edges = []
     
-    # 1. Add Victim Node
+    # 1. Add Victim Node (Anchor Point)
     victims = target_case["4_victim_profiles"]
     if victims:
         v = victims[0]
         nodes.append({
             "id": v["victim_id"],
             "type": "polaroid",
-            "position": {"x": 300, "y": 100},
+            "position": {"x": 350, "y": 150},
             "data": {"label": v["full_name"], "type": "victim", "detail": v["demographics"]["physical_description"], "imageUrl": v["portrait_image_url"]}
         })
 
-    # 2. Add Suspect Nodes
+    # 2. Add Suspect Nodes (Positioned cleanly below the victim)
     suspects = target_case["5_suspects_and_pois"]
     for idx, s in enumerate(suspects):
         s_id = s["person_id"]
         nodes.append({
             "id": s_id,
             "type": "polaroid",
-            "position": {"x": 100 + (idx * 220), "y": 350},
+            "position": {"x": 100 + (idx * 240), "y": 500},
             "data": {"label": s["full_name"], "type": "suspect", "detail": s["legal_status"]}
         })
 
@@ -75,7 +75,7 @@ def get_case_graph(case_id: str):
         nodes.append({
             "id": vh_id,
             "type": "polaroid",
-            "position": {"x": 550, "y": 350},
+            "position": {"x": 700, "y": 500},
             "data": {"label": vh["make_model"], "type": "vehicle", "detail": vh["distinguishing_features"]}
         })
 
@@ -85,18 +85,26 @@ def get_case_graph(case_id: str):
     nodes.append({
         "id": loc_id,
         "type": "polaroid",
-        "position": {"x": 300, "y": 600},
+        "position": {"x": 350, "y": 500},
         "data": {"label": loc_name, "type": "location", "detail": "Primary Location of Disappearance"}
     })
 
-    # 5. Add Physical Evidence Nodes (Distinguishing Characteristics Polaroids)
+    # 5. Add Physical Evidence Nodes (TIGHT COMPACT ROW/COLUMN LAYOUT)
     evidence_items = target_case.get("8_physical_and_forensic_evidence", [])
     for idx, evid in enumerate(evidence_items):
         evid_id = evid["evidence_id"]
+        
+        # Calculate a structured horizontal layout left of the victim card
+        # Stacks up to 2 items per row to keep things incredibly tight
+        row = idx // 2
+        col = idx % 2
+        x_pos = 50 + (col * 230)
+        y_pos = -50 + (row * 180)
+        
         nodes.append({
             "id": evid_id,
             "type": "polaroid",
-            "position": {"x": 50, "y": 100},
+            "position": {"x": x_pos, "y": y_pos},
             "data": {
                 "label": "Physical Characteristics", 
                 "type": "evidence", 
@@ -115,9 +123,7 @@ def get_case_graph(case_id: str):
             "style": {"stroke": "#b91c1c", "strokeWidth": 3}
         })
 
-    # =====================================================================
-    # CROSS-CASE ANALYSIS (Link to other cases sharing same characteristics)
-    # =====================================================================
+    # 7. CROSS-CASE ANALYSIS (Link to other cases sharing same characteristics)
     for other_case in db:
         other_id = other_case["1_case_core_metadata"]["case_id"]
         if other_id == case_id:
@@ -130,7 +136,7 @@ def get_case_graph(case_id: str):
             nodes.append({
                 "id": ext_node_id,
                 "type": "polaroid",
-                "position": {"x": 750, "y": 100},
+                "position": {"x": 750, "y": -50},
                 "data": {"label": f"Linked Case: {other_title}", "type": "location", "detail": f"Also disappeared from {loc_name}"}
             })
             
