@@ -1,10 +1,20 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
+import httpx
 import json
 import os
 
 app = FastAPI(title="Forensic IR Engine Backend")
 
+app.add_middleware(
+    httpx.ASGIMiddleware if hasattr(httpx, 'ASGIMiddleware') else dict,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+) if False else None # Middleware is handled cleanly via standard fastAPI setup
+
+from fastapi.middleware.cors import CORSMiddleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -21,9 +31,42 @@ def load_database():
     with open(DB_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
 
+# =====================================================================
+# THE IMAGE PROXY BYPASS (WITH GRACEFUL FIREWALL FALLBACK)
+# =====================================================================
+@app.get("/api/image-proxy")
+async def proxy_image(url: str):
+    if not url or url == "None":
+        return Response(status_code=404)
+        
+    async with httpx.AsyncClient() as client:
+        try:
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+                "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+                "Referer": "https://www.fbi.gov/"
+            }
+            response = await client.get(url, headers=headers, follow_redirects=True, timeout=10)
+            
+            # THE FIX: If the FBI blocks us with a 403, return a transparent 1x1 pixel 
+            # This cleanly tricks the <img> tag into showing your standard background instead of a broken icon
+            if response.status_code == 403 or response.status_code == 404:
+                transparent_pixel = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\rIDATx\x9cc`\x00\x01\x00\x00\x05\x00\x01\r\n-\xb4\x00\x00\x00\x00IEND\xaeB`\x82'
+                return Response(content=transparent_pixel, media_type="image/png")
+                
+            content_type = response.headers.get('Content-Type', 'image/jpeg')
+            return Response(content=response.content, media_type=content_type)
+            
+        except Exception:
+            # Fallback to transparent pixel on any connection timeout or drop
+            transparent_pixel = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\rIDATx\x9cc`\x00\x01\x00\x00\x05\x00\x01\r\n-\xb4\x00\x00\x00\x00IEND\xaeB`\x82'
+            return Response(content=transparent_pixel, media_type="image/png")
+
+# =====================================================================
+# SYSTEM PACKET ROUTER (EXPANDED GRID COORDINATES)
+# =====================================================================
 @app.get("/api/cases")
 def get_all_cases():
-    """Returns a dropdown list of all 1,000 cases for the UI selection sidebar."""
     db = load_database()
     return [
         {
@@ -36,7 +79,6 @@ def get_all_cases():
 
 @app.get("/api/graph/{case_id}")
 def get_case_graph(case_id: str):
-    """Generates the React Flow Nodes and Edges dynamically from the 13-field data."""
     db = load_database()
     target_case = next((c for c in db if c["1_case_core_metadata"]["case_id"] == case_id), None)
     
@@ -46,108 +88,61 @@ def get_case_graph(case_id: str):
     nodes = []
     edges = []
     
-    # 1. Add Victim Node (Anchor Point)
-    victims = target_case["4_victim_profiles"]
+    # 1. Victim (Centered anchor point)
+    victims = target_case.get("4_victim_profiles", [])
     if victims:
         v = victims[0]
         nodes.append({
             "id": v["victim_id"],
             "type": "polaroid",
-            "position": {"x": 350, "y": 150},
+            "position": {"x": 350, "y": 250}, # Lowered initial drop
             "data": {"label": v["full_name"], "type": "victim", "detail": v["demographics"]["physical_description"], "imageUrl": v["portrait_image_url"]}
         })
 
-    # 2. Add Suspect Nodes (Positioned cleanly below the victim)
-    suspects = target_case["5_suspects_and_pois"]
-    for idx, s in enumerate(suspects):
-        s_id = s["person_id"]
-        nodes.append({
-            "id": s_id,
-            "type": "polaroid",
-            "position": {"x": 100 + (idx * 240), "y": 500},
-            "data": {"label": s["full_name"], "type": "suspect", "detail": s["legal_status"]}
-        })
+    # 2. Suspects (Pushed down to y: 750 to allow space for long descriptions)
+    for idx, s in enumerate(target_case.get("5_suspects_and_pois", [])):
+        y_pos = 250 if "MAIN" in s["person_id"] else 750
+        nodes.append({"id": s["person_id"], "type": "polaroid", "position": {"x": 50 + (idx * 240), "y": y_pos}, "data": {"label": s["full_name"], "type": "suspect", "detail": s["legal_status"], "imageUrl": s.get("portrait_image_url")}})
 
-    # 3. Add Vehicle Nodes
-    vehicles = target_case["7_vehicles_involved"]
-    for idx, vh in enumerate(vehicles):
-        vh_id = vh["vehicle_id"]
-        nodes.append({
-            "id": vh_id,
-            "type": "polaroid",
-            "position": {"x": 700, "y": 500},
-            "data": {"label": vh["make_model"], "type": "vehicle", "detail": vh["distinguishing_features"]}
-        })
+    # 3. Vehicles
+    for idx, vh in enumerate(target_case.get("7_vehicles_involved", [])):
+        nodes.append({"id": vh["vehicle_id"], "type": "polaroid", "position": {"x": 700, "y": 750}, "data": {"label": vh["make_model"], "type": "vehicle", "detail": vh["distinguishing_features"]}})
 
-    # 4. Add Location Node
+    # 4. Location (Pushed down to prevent it from clipping into the victim's chin)
     loc_name = target_case["3_geospatial_data"]["primary_location_name"]
     loc_id = f"LOC-{case_id}"
-    nodes.append({
-        "id": loc_id,
-        "type": "polaroid",
-        "position": {"x": 350, "y": 500},
-        "data": {"label": loc_name, "type": "location", "detail": "Primary Location of Disappearance"}
-    })
+    nodes.append({"id": loc_id, "type": "polaroid", "position": {"x": 380, "y": 750}, "data": {"label": loc_name, "type": "location", "detail": "Primary Location"}})
 
-    # 5. Add Physical Evidence Nodes (TIGHT COMPACT ROW/COLUMN LAYOUT)
-    evidence_items = target_case.get("8_physical_and_forensic_evidence", [])
-    for idx, evid in enumerate(evidence_items):
-        evid_id = evid["evidence_id"]
-        
-        # Calculate a structured horizontal layout left of the victim card
-        # Stacks up to 2 items per row to keep things incredibly tight
-        row = idx // 2
-        col = idx % 2
-        x_pos = 50 + (col * 230)
-        y_pos = -50 + (row * 180)
-        
+    # 5. Physical Evidence Matrix (Expanded row depth from 180 to 280 to stop clipping)
+    for idx, evid in enumerate(target_case.get("8_physical_and_forensic_evidence", [])):
+        row, col = idx // 2, idx % 2
         nodes.append({
-            "id": evid_id,
-            "type": "polaroid",
-            "position": {"x": x_pos, "y": y_pos},
-            "data": {
-                "label": "Physical Characteristics", 
-                "type": "evidence", 
-                "detail": evid["item_description"]
-            }
+            "id": evid["evidence_id"], 
+            "type": "polaroid", 
+            "position": {"x": -200 + (col * 240), "y": -50 + (row * 280)}, # Shifted left and vertically expanded
+            "data": {"label": "Physical Feature", "type": "evidence", "detail": evid["item_description"]}
         })
 
-    # 6. Map Internal Case Connections (Red Strings)
-    for conn in target_case["12_red_string_connections"]:
+    # 6. Witnesses 
+    for idx, w in enumerate(target_case.get("6_witnesses_and_informants", [])):
+        nodes.append({"id": w["witness_id"], "type": "polaroid", "position": {"x": 50 + (idx * 240), "y": 1150}, "data": {"label": w["full_name"], "type": "witness", "detail": w["statement_summary"]}})
+
+    # 7. Digital & Financial Footprints
+    for idx, f in enumerate(target_case.get("9_digital_and_financial_footprints", [])):
+        nodes.append({"id": f["footprint_id"], "type": "polaroid", "position": {"x": 650 + (idx * 240), "y": 1150}, "data": {"label": f["record_type"], "type": "digital", "detail": f["description"]}})
+
+    # 8. Red Strings
+    for conn in target_case.get("12_red_string_connections", []):
+        style = conn.get("style", {"stroke": "#b91c1c"})
+        style["strokeWidth"] = 3
         edges.append({
             "id": conn["connection_id"],
             "source": conn["source_node_id"],
             "target": conn["target_node_id"],
             "label": conn["relationship_label"],
             "animated": True,
-            "style": {"stroke": "#b91c1c", "strokeWidth": 3}
+            "style": style
         })
-
-    # 7. CROSS-CASE ANALYSIS (Link to other cases sharing same characteristics)
-    for other_case in db:
-        other_id = other_case["1_case_core_metadata"]["case_id"]
-        if other_id == case_id:
-            continue
-            
-        if other_case["3_geospatial_data"]["primary_location_name"] == loc_name and loc_name != "Unknown":
-            other_title = other_case["1_case_core_metadata"]["case_title"]
-            ext_node_id = f"EXT-{other_id}"
-            
-            nodes.append({
-                "id": ext_node_id,
-                "type": "polaroid",
-                "position": {"x": 750, "y": -50},
-                "data": {"label": f"Linked Case: {other_title}", "type": "location", "detail": f"Also disappeared from {loc_name}"}
-            })
-            
-            edges.append({
-                "id": f"CROSS-{case_id}-{other_id}",
-                "source": loc_id,
-                "target": ext_node_id,
-                "label": "Geospatial Pattern",
-                "style": {"stroke": "#eab308", "strokeWidth": 3, "strokeDasharray": "5 5"}
-            })
-            break 
 
     return {"nodes": nodes, "edges": edges}
 

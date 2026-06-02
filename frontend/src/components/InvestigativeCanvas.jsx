@@ -14,16 +14,14 @@ import PolaroidNode from './PolaroidNode';
 
 const nodeTypes = { polaroid: PolaroidNode };
 
-// This internal component has access to the useReactFlow camera hook
 void function CanvasCore() { return null; }; 
 
 function CanvasBoard({ caseList, selectedCaseId, setSelectedCaseId, nodes, setNodes, onNodesChange, edges, setEdges, onEdgesChange }) {
   const { fitView } = useReactFlow();
+  const [searchTerm, setSearchTerm] = useState(''); // NEW: Search state
 
-  // Watch for node changes to force-center the camera automatically
   useEffect(() => {
     if (nodes.length > 0) {
-      // Small timeout ensures nodes are fully painted before camera centers
       const timer = setTimeout(() => {
         fitView({ padding: 0.3, duration: 400 });
       }, 500);
@@ -36,18 +34,33 @@ function CanvasBoard({ caseList, selectedCaseId, setSelectedCaseId, nodes, setNo
     [setEdges]
   );
 
+  // NEW: Filter logic for the sidebar
+  const filteredCases = caseList.filter(c =>
+    c.case_title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (c.location && c.location.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
   return (
     <div className="flex w-full h-screen bg-[#1c1917]">
       
-      {/* CASE SELECTOR SIDEBAR */}
+      {/* CASE SELECTOR SIDEBAR (Now with Search!) */}
       <div className="w-80 h-full bg-[#0c0a09] border-r border-[#292524] flex flex-col z-20">
         <div className="p-4 border-b border-[#292524] bg-[#141210]">
           <h2 className="text-sm font-bold uppercase tracking-widest text-[#ef4444] font-mono">Case Files Index</h2>
-          <p className="text-xs text-[#a8a29e] mt-1">Select from 1,000 parsed profiles</p>
+          <p className="text-xs text-[#a8a29e] mt-1 mb-3">Select from {caseList.length} parsed profiles</p>
+          
+          {/* Search Input */}
+          <input
+            type="text"
+            placeholder="Search name or location..."
+            className="w-full p-2 bg-[#1c1917] text-[#e7e5e4] border border-[#44403c] rounded text-xs focus:outline-none focus:border-[#ef4444] transition-colors"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
         
         <div className="flex-1 overflow-y-auto p-2 space-y-1 bg-[#0c0a09]">
-          {caseList.map((c) => (
+          {filteredCases.map((c) => (
             <button
               key={c.case_id}
               onClick={() => setSelectedCaseId(c.case_id)}
@@ -61,6 +74,9 @@ function CanvasBoard({ caseList, selectedCaseId, setSelectedCaseId, nodes, setNo
               <div className="text-[10px] text-[#a8a29e] mt-0.5 truncate font-mono block">{c.location}</div>
             </button>
           ))}
+          {filteredCases.length === 0 && (
+            <div className="p-4 text-center text-xs text-[#78716c] italic">No cases match your search.</div>
+          )}
         </div>
       </div>
 
@@ -80,7 +96,6 @@ function CanvasBoard({ caseList, selectedCaseId, setSelectedCaseId, nodes, setNo
           <Controls className="bg-[#141210] border border-[#292524] text-white fill-white rounded shadow-2xl" />
         </ReactFlow>
 
-        {/* Floating System Status Badge */}
         <div className="absolute top-4 left-4 bg-[#0c0a09]/90 p-4 border border-[#292524] rounded shadow-2xl pointer-events-none z-10">
           <h1 className="text-md font-bold uppercase tracking-wider text-[#fafaf9] font-mono">OSINT Investigation Engine</h1>
           <p className="text-xs text-[#22c55e] font-mono mt-1 flex items-center gap-1.5">
@@ -94,7 +109,6 @@ function CanvasBoard({ caseList, selectedCaseId, setSelectedCaseId, nodes, setNo
   );
 }
 
-// Parent Wrapper providing the necessary ReactFlow context provider
 export default function InvestigativeCanvas() {
   const [caseList, setCaseList] = useState([]);
   const [selectedCaseId, setSelectedCaseId] = useState('');
@@ -122,7 +136,7 @@ export default function InvestigativeCanvas() {
         setNodes(data.nodes);
         setEdges(data.edges);
       })
-      .catch((err) => console.error("Error streaming graph structure packets:", err));
+      .catch((err) => console.error("Error streaming graph:", err));
   }, [selectedCaseId, setNodes, setEdges]);
 
   return (
