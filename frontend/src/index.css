@@ -1,3 +1,608 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+
+/* =====================================================================
+   DETECTIVE BOARD GLOBAL DESIGN SYSTEM
+   Ported and expanded from code.html
+   ===================================================================== */
+
+/* Base resets */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  background-color: #050201;
+  color: #fadcd5;
+  font-family: 'Courier Prime', monospace;
+  overflow: hidden;
+}
+
+/* ─── CORK TEXTURE ─────────────────────────────────────── */
+.cork-texture {
+  background-color: #6d4c41;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(0,0,0,0.4) 1px, transparent 0),
+    radial-gradient(circle at 3px 3px, rgba(0,0,0,0.3) 1px, transparent 0),
+    radial-gradient(circle at 5px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+  background-size: 8px 8px;
+  box-shadow: inset 0 0 150px rgba(0,0,0,0.95);
+  position: relative;
+}
+.cork-texture::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0,0,0,0.1);
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* ─── DESK LAMP ─────────────────────────────────────────── */
+.desk-lamp {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 60px;
+  background: linear-gradient(180deg, #1a1a1a 0%, #333 100%);
+  border-radius: 60px 60px 0 0;
+  z-index: 60;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.2);
+  border: 2px solid #000;
+  border-bottom: none;
+  cursor: grab;
+}
+.desk-lamp:active { cursor: grabbing; }
+.desk-lamp::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 10px;
+  right: 10px;
+  height: 10px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 30px 10px rgba(255,255,255,0.8), 0 0 60px 20px rgba(255,255,200,0.6);
+  pointer-events: none;
+}
+
+/* ─── CABLE LAYER ───────────────────────────────────────── */
+#cable-layer {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 55;
+  filter: drop-shadow(2px 5px 3px rgba(0,0,0,0.6));
+}
+
+/* ─── SPOTLIGHT OVERLAY ─────────────────────────────────── */
+.spotlight-overlay {
+  background: conic-gradient(from 150deg at 50% 0%, rgba(0,0,0,0.9) 0deg, rgba(255,255,230,0.25) 30deg, rgba(255,255,240,0.3) 60deg, rgba(0,0,0,0.9) 90deg, rgba(0,0,0,0.95) 360deg);
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  transition: background 0.05s linear;
+}
+
+/* ─── PINS ──────────────────────────────────────────────── */
+.pin {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow:
+    3px 5px 8px rgba(0,0,0,0.6),
+    inset 1px 1px 3px rgba(255,255,255,0.6),
+    inset -2px -2px 4px rgba(0,0,0,0.5);
+  z-index: 10;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.pin.active {
+  transform: translateX(-50%) scale(1.3);
+  box-shadow:
+    0 0 15px rgba(255,255,255,0.8),
+    3px 5px 8px rgba(0,0,0,0.6),
+    inset 1px 1px 3px rgba(255,255,255,0.6),
+    inset -2px -2px 4px rgba(0,0,0,0.5);
+}
+.pin::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 2px rgba(255,255,255,1);
+}
+.pin.red    { background: radial-gradient(circle at 30% 30%, #ef4444, #991b1b); }
+.pin.silver { background: radial-gradient(circle at 30% 30%, #f3f4f6, #6b7280); }
+.pin.blue   { background: radial-gradient(circle at 30% 30%, #3b82f6, #1e3a8a); }
+.pin.gold   { background: radial-gradient(circle at 30% 30%, #f59e0b, #92400e); }
+.pin.green  { background: radial-gradient(circle at 30% 30%, #22c55e, #166534); }
+.pin.purple { background: radial-gradient(circle at 30% 30%, #8b5cf6, #4c1d95); }
+
+/* ─── EVIDENCE ITEMS ────────────────────────────────────── */
+.evidence-item {
+  position: absolute;
+  box-shadow:
+    2px 4px 6px rgba(0,0,0,0.3),
+    5px 15px 20px rgba(0,0,0,0.4),
+    10px 25px 30px rgba(0,0,0,0.5);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  transition: opacity 0.5s ease-out, transform 0.15s ease;
+}
+.evidence-item:active { cursor: grabbing; }
+.evidence-item:hover { z-index: 100 !important; }
+
+/* ─── STICKY NOTE ───────────────────────────────────────── */
+.sticky-note {
+  background: linear-gradient(135deg, #fef08a 0%, #eab308 100%);
+}
+
+/* ─── NEWSPAPER ─────────────────────────────────────────── */
+.newspaper {
+  background: linear-gradient(to bottom right, #f5f5f5, #d4d4d4);
+  color: #222;
+}
+
+/* ─── MASKING TAPE ──────────────────────────────────────── */
+.masking-tape {
+  position: absolute;
+  top: -10px; left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 80px; height: 25px;
+  background-color: rgba(235, 235, 220, 0.6);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  border-left: 2px dashed rgba(0,0,0,0.1);
+  border-right: 2px dashed rgba(0,0,0,0.1);
+  z-index: 15;
+  backdrop-filter: blur(1px);
+}
+
+/* ─── POLAROID ──────────────────────────────────────────── */
+.polaroid {
+  background: #fff;
+  padding: 10px 10px 40px 10px;
+}
+.polaroid-img {
+  background: #111;
+  width: 100%;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+  overflow: hidden;
+  position: relative;
+}
+.polaroid-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(30%) contrast(1.1);
+}
+
+/* ─── STRING LAYER ──────────────────────────────────────── */
+#string-layer {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 15;
+  filter: drop-shadow(2px 5px 3px rgba(0,0,0,0.6));
+}
+.string-path {
+  stroke: #b22222;
+  stroke-width: 3px;
+  fill: none;
+  stroke-dasharray: 8 2;
+  opacity: 0.9;
+}
+.temp-string-path {
+  stroke: #ff4444;
+  stroke-width: 3px;
+  fill: none;
+  stroke-dasharray: 4 4;
+  opacity: 0.7;
+}
+
+/* ─── STRING LABEL ──────────────────────────────────────── */
+.string-label {
+  background: rgba(254, 240, 138, 0.92);
+  color: #1a0a00;
+  font-family: 'Caveat', cursive;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  border: 1px solid #b45309;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 1px 2px 4px rgba(0,0,0,0.4);
+}
+
+/* ─── MAGNIFYING GLASS ──────────────────────────────────── */
+.magnifying-glass {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 8px solid #2d1b15;
+  box-shadow:
+    0 15px 25px rgba(0,0,0,0.6),
+    inset 0 0 20px rgba(255,255,255,0.4),
+    inset 0 0 10px rgba(0,0,0,0.5);
+  cursor: grab;
+  z-index: 50;
+}
+.magnifying-glass:active { cursor: grabbing; }
+.magnifying-glass-lens {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: brightness(1.25) contrast(1.15) saturate(1.1);
+}
+.magnifying-glass-clone-container {
+  position: absolute;
+  top: 0; left: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+.magnifying-glass::after {
+  content: '';
+  position: absolute;
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), transparent 50%);
+  pointer-events: none;
+  z-index: 2;
+}
+.magnifying-glass-handle {
+  position: absolute;
+  bottom: -90px; right: -90px;
+  width: 35px; height: 120px;
+  background: repeating-linear-gradient(
+    to right,
+    #4e342e, #4e342e 2px,
+    #3e2723 4px, #3e2723 6px
+  );
+  border-radius: 15px;
+  transform: rotate(-45deg);
+  transform-origin: top left;
+  box-shadow: 4px 4px 8px rgba(0,0,0,0.6), inset 2px 2px 5px rgba(255,255,255,0.1);
+  border: 2px solid #1a0f0c;
+}
+
+/* ─── CASE FOLDERS ──────────────────────────────────────── */
+.case-folder {
+  position: absolute;
+  bottom: 20px; right: 20px;
+  width: 200px; height: 140px;
+  background: #e4c58b;
+  border-radius: 5px 20px 5px 5px;
+  box-shadow: -2px -2px 10px rgba(0,0,0,0.5), 5px 5px 15px rgba(0,0,0,0.6);
+  z-index: 45;
+  cursor: pointer;
+  transition: transform 0.2s;
+  border: 1px solid #c2a05d;
+}
+.case-folder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom right, rgba(255,255,255,0.2), transparent, rgba(0,0,0,0.1));
+  border-radius: inherit;
+  pointer-events: none;
+}
+.case-folder::after {
+  content: 'TOP SECRET';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  color: rgba(200, 0, 0, 0.6);
+  font-family: 'Special Elite', monospace;
+  font-size: 22px;
+  font-weight: bold;
+  border: 3px solid rgba(200, 0, 0, 0.6);
+  padding: 5px 10px;
+  pointer-events: none;
+}
+.case-folder:hover { transform: translateY(-8px) rotate(1deg); }
+.folder-stack-1 { bottom: 15px; right: 15px; transform: rotate(-5deg); z-index: 44; background: #d4b57b; }
+.folder-stack-2 { bottom: 10px; right: 10px; transform: rotate(3deg); z-index: 43; background: #c4a56b; }
+
+/* ─── PIN CUP ───────────────────────────────────────────── */
+.pin-cup {
+  position: absolute;
+  bottom: 20px; left: 20px;
+  width: 60px; height: 80px;
+  background: rgba(255,255,255,0.05);
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 5px 5px 20px 20px;
+  box-shadow: inset 0 0 15px rgba(255,255,255,0.1), 5px 5px 15px rgba(0,0,0,0.6);
+  z-index: 45;
+  cursor: pointer;
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 5px;
+  transition: transform 0.1s;
+  overflow: hidden;
+}
+.pin-cup:active { transform: scale(0.95); }
+.pin-cup::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: -2px; right: -2px;
+  height: 10px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+}
+.pin-cup-pins {
+  width: 100%; height: 60%;
+  background:
+    radial-gradient(circle at 30% 30%, #ef4444 3px, transparent 4px),
+    radial-gradient(circle at 70% 60%, #3b82f6 3px, transparent 4px),
+    radial-gradient(circle at 40% 80%, #f3f4f6 3px, transparent 4px),
+    radial-gradient(circle at 80% 20%, #ef4444 3px, transparent 4px),
+    radial-gradient(circle at 20% 50%, #f3f4f6 3px, transparent 4px),
+    radial-gradient(circle at 50% 40%, #ef4444 3px, transparent 4px),
+    radial-gradient(circle at 60% 80%, #3b82f6 3px, transparent 4px);
+  opacity: 0.9;
+}
+
+/* ─── EDITABLE CONTENT ──────────────────────────────────── */
+.editable-content {
+  outline: none;
+  min-height: 40px;
+  cursor: text;
+}
+.editable-content:focus {
+  background-color: rgba(255,255,255,0.2);
+  border-radius: 4px;
+}
+.editable-content:empty::before {
+  content: "Type here...";
+  color: rgba(0,0,0,0.4);
+  font-style: italic;
+}
+
+/* ─── STICKY PAD ────────────────────────────────────────── */
+.sticky-pad {
+  position: absolute;
+  bottom: 20px; left: 90px;
+  width: 110px; height: 110px;
+  background: linear-gradient(135deg, #fef08a 0%, #e8b800 50%, #eab308 100%);
+  box-shadow:
+    2px 3px 0 #c8a000,
+    2px 4px 8px rgba(0,0,0,0.45),
+    0 0 0 1px rgba(0,0,0,0.1);
+  cursor: grab;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Simulate stacked pages */
+  border-bottom: 5px solid rgba(0,0,0,0.18);
+  border-right: 3px solid rgba(0,0,0,0.12);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.sticky-pad::before {
+  content: '';
+  position: absolute;
+  bottom: -8px; left: 4px; right: -4px;
+  height: 100%;
+  background: linear-gradient(135deg, #f5dc60, #d4a200);
+  z-index: -1;
+  border-bottom: 5px solid rgba(0,0,0,0.12);
+}
+.sticky-pad::after {
+  content: '';
+  position: absolute;
+  bottom: -14px; left: 8px; right: -8px;
+  height: 100%;
+  background: linear-gradient(135deg, #f0d440, #c09800);
+  z-index: -2;
+}
+.sticky-pad:active { cursor: grabbing; transform: scale(0.96) translateY(2px); }
+
+/* ─── FOUNTAIN PEN ──────────────────────────────────────── */
+.fountain-pen {
+  position: absolute;
+  width: 32px; height: 160px;
+  cursor: grab;
+  z-index: 50;
+  filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.7));
+}
+.fountain-pen:active { cursor: grabbing; }
+
+/* ─── SIDEBAR ───────────────────────────────────────────── */
+.sidebar {
+  background: linear-gradient(to bottom, #0c0a09, #111008);
+  border-right: 1px solid #292524;
+  position: relative;
+}
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; right: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, transparent, #b45309 30%, #92400e 70%, transparent);
+  opacity: 0.4;
+}
+
+/* ─── CASE FILE BUTTON ──────────────────────────────────── */
+.case-file-btn {
+  font-family: 'Special Elite', monospace;
+  letter-spacing: 0.02em;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+}
+.case-file-btn:hover {
+  border-left-color: #b45309;
+  background: #1c1410;
+}
+.case-file-btn.active-case {
+  border-left-color: #ef4444;
+  background: #1c0e0e;
+  color: #fca5a5;
+}
+
+/* ─── CASE HEADER ───────────────────────────────────────── */
+.case-header {
+  font-family: 'Special Elite', monospace;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(255,180,160,0.3);
+  letter-spacing: -1px;
+}
+
+/* ─── REACT FLOW OVERRIDES ──────────────────────────────── */
+.react-flow__background {
+  background-color: transparent !important;
+}
+.react-flow__pane {
+  cursor: default !important;
+}
+.react-flow__controls {
+  background: #0c0a09 !important;
+  border: 1px solid #44403c !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.8) !important;
+  overflow: hidden;
+}
+.react-flow__controls button {
+  background: #0c0a09 !important;
+  border-bottom: 1px solid #292524 !important;
+  color: #a8a29e !important;
+  fill: #a8a29e !important;
+  transition: all 0.15s;
+}
+.react-flow__controls button:hover {
+  background: #1c1917 !important;
+  color: #fafaf9 !important;
+  fill: #fafaf9 !important;
+}
+.react-flow__edge-path {
+  filter: drop-shadow(0 3px 4px rgba(0,0,0,0.5));
+}
+.react-flow__edge-label {
+  font-family: 'Caveat', cursive !important;
+}
+
+/* ─── NODE WRAPPER (React Flow) ─────────────────────────── */
+.react-flow__node {
+  transition: filter 0.2s;
+}
+.react-flow__node.selected .detective-node-card {
+  box-shadow:
+    0 0 0 2px #ef4444,
+    2px 4px 6px rgba(0,0,0,0.4),
+    5px 15px 20px rgba(0,0,0,0.5) !important;
+}
+
+/* ─── STATUS BADGE ──────────────────────────────────────── */
+.status-pulse {
+  animation: pulse-green 2s infinite;
+}
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ─── SEARCH INPUT ──────────────────────────────────────── */
+.detective-search {
+  background: #0a0806;
+  border: 1px solid #3d3026;
+  color: #d6d3d1;
+  font-family: 'Courier Prime', monospace;
+  transition: border-color 0.2s;
+}
+.detective-search:focus {
+  outline: none;
+  border-color: #b45309;
+  box-shadow: 0 0 0 1px rgba(180, 83, 9, 0.3);
+}
+.detective-search::placeholder {
+  color: #57534e;
+  font-style: italic;
+}
+
+/* ─── TOOLBAR ────────────────────────────────────────────── */
+.board-toolbar {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 50;
+  background: rgba(12, 10, 9, 0.9);
+  border: 1px solid #3d3026;
+  border-radius: 6px;
+  padding: 8px 14px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+.toolbar-btn {
+  background: none;
+  border: 1px solid #3d3026;
+  color: #a8a29e;
+  font-family: 'Special Elite', monospace;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.toolbar-btn:hover {
+  background: #1c1917;
+  color: #fafaf9;
+  border-color: #a8a29e;
+}
+.toolbar-btn.danger:hover {
+  background: #450a0a;
+  color: #fca5a5;
+  border-color: #ef4444;
+}
+
+/* ─── SCROLLBAR ─────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0c0a09; }
+::-webkit-scrollbar-thumb { background: #3d3026; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #78716c; }
+
+/* ─── LOADING SCREEN ─────────────────────────────────────── */
+.loading-scanline {
+  animation: scanline 1.5s linear infinite;
+}
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+/* ─── NODE TYPE COLOR TOKENS ────────────────────────────── */
+:root {
+  --node-suspect: #ef4444;
+  --node-victim:  #f59e0b;
+  --node-witness: #facc15;
+  --node-evidence: #22c55e;
+  --node-vehicle:  #94a3b8;
+  --node-location: #8b5cf6;
+  --node-digital:  #3b82f6;
+  --node-default:  #78716c;
+}

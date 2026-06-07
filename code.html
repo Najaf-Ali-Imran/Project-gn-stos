@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CASE FILE: #7402 - The Board</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&amp;family=Courier+Prime:wght@400;700&amp;family=Permanent+Marker&amp;family=Special+Elite&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#271814",
+                        "on-secondary-container": "#342800",
+                        "on-tertiary-fixed": "#1f1c00",
+                        "tertiary-fixed": "#efe58b",
+                        "surface-container-high": "#372622",
+                        "on-background": "#fadcd5",
+                        "on-surface-variant": "#e2beba",
+                        "surface-bright": "#483530",
+                        "primary-fixed-dim": "#ffb4ac",
+                        "surface-container-lowest": "#180b07",
+                        "inverse-surface": "#fadcd5",
+                        "background": "#1e100c",
+                        "secondary-fixed-dim": "#e9c349",
+                        "secondary": "#e9c349",
+                        "on-error": "#690005",
+                        "primary": "#ffb4ac",
+                        "surface-tint": "#ffb4ac",
+                        "on-surface": "#fadcd5",
+                        "on-tertiary-container": "#464100",
+                        "inverse-primary": "#b52424",
+                        "surface-container-highest": "#43302c",
+                        "on-primary": "#690007",
+                        "outline-variant": "#5a403e",
+                        "secondary-container": "#af8d11",
+                        "primary-container": "#b22222",
+                        "outline": "#aa8986",
+                        "secondary-fixed": "#ffe088",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed-variant": "#92030f",
+                        "on-primary-container": "#ffc8c2",
+                        "surface-dim": "#1e100c",
+                        "surface": "#1e100c",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#574500",
+                        "surface-variant": "#43302c",
+                        "on-tertiary": "#363100",
+                        "inverse-on-surface": "#3e2c28",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed": "#ffdad6",
+                        "on-secondary-fixed": "#241a00",
+                        "on-primary-fixed": "#410003",
+                        "on-tertiary-fixed-variant": "#4e4800",
+                        "surface-container": "#2c1c18",
+                        "on-secondary": "#3c2f00",
+                        "tertiary-container": "#b6ae5a",
+                        "tertiary": "#d2c972",
+                        "tertiary-fixed-dim": "#d2c972"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "canvas-margin": "40px",
+                        "pin-radius": "16px",
+                        "thread-thickness": "2px",
+                        "overlap-offset": "-20px"
+                    },
+                    "fontFamily": {
+                        "handwritten-note": ["Caveat"],
+                        "permanent-marker": ["Permanent Marker"],
+                        "label-tag": ["Special Elite"],
+                        "case-file-header-mobile": ["Special Elite"],
+                        "report-body": ["Courier Prime"],
+                        "case-file-header": ["Special Elite"]
+                    },
+                    "fontSize": {
+                        "handwritten-note": ["22px", { "lineHeight": "1.1", "fontWeight": "500" }],
+                        "label-tag": ["14px", { "lineHeight": "1.0", "fontWeight": "400" }],
+                        "case-file-header-mobile": ["32px", { "lineHeight": "1.1", "fontWeight": "700" }],
+                        "report-body": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "case-file-header": ["48px", { "lineHeight": "1.2", "letterSpacing": "-1px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #050201;
+        }
+
+        .cork-texture {
+            background-color: #6d4c41;
+            background-image: 
+                radial-gradient(circle at 1px 1px, rgba(0,0,0,0.4) 1px, transparent 0),
+                radial-gradient(circle at 3px 3px, rgba(0,0,0,0.3) 1px, transparent 0),
+                radial-gradient(circle at 5px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 8px 8px;
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.95);
+            position: relative;
+        }
+
+        .cork-texture::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-color: rgba(0,0,0,0.1);
+            pointer-events: none;
+            mix-blend-mode: overlay;
+        }
+
+        .desk-lamp {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 60px;
+            background: linear-gradient(180deg, #1a1a1a 0%, #333 100%);
+            border-radius: 60px 60px 0 0;
+            z-index: 60;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.2);
+            border: 2px solid #000;
+            border-bottom: none;
+            cursor: grab;
+        }
+        .desk-lamp:active {
+            cursor: grabbing;
+        }
+        .desk-lamp::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 10px;
+            right: 10px;
+            height: 10px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 30px 10px rgba(255,255,255,0.8), 0 0 60px 20px rgba(255,255,200,0.6);
+            pointer-events: none;
+        }
+        
+        #cable-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 55;
+            filter: drop-shadow(2px 5px 3px rgba(0,0,0,0.6));
+        }
+
+        .spotlight-overlay {
+            background: conic-gradient(from 150deg at 50% 0%, rgba(0,0,0,0.9) 0deg, rgba(255,255,230,0.25) 30deg, rgba(255,255,240,0.3) 60deg, rgba(0,0,0,0.9) 90deg, rgba(0,0,0,0.95) 360deg);
+            pointer-events: none;
+            mix-blend-mode: multiply;
+            transition: background 0.1s ease-out;
+        }
+
+        .pin {
+            position: absolute;
+            width: var(--pin-radius);
+            height: var(--pin-radius);
+            border-radius: 50%;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 
+                3px 5px 8px rgba(0,0,0,0.6), 
+                inset 1px 1px 3px rgba(255,255,255,0.6),
+                inset -2px -2px 4px rgba(0,0,0,0.5);
+            z-index: 10;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .pin.active {
+            transform: translateX(-50%) scale(1.3);
+            box-shadow: 
+                0 0 15px rgba(255,255,255,0.8),
+                3px 5px 8px rgba(0,0,0,0.6), 
+                inset 1px 1px 3px rgba(255,255,255,0.6),
+                inset -2px -2px 4px rgba(0,0,0,0.5);
+        }
+
+        .pin::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 2px rgba(255,255,255,1);
+        }
+        
+        .pin.red { background: radial-gradient(circle at 30% 30%, #ef4444, #991b1b); }
+        .pin.silver { background: radial-gradient(circle at 30% 30%, #f3f4f6, #6b7280); }
+        .pin.blue { background: radial-gradient(circle at 30% 30%, #3b82f6, #1e3a8a); }
+
+        .evidence-item {
+            position: absolute;
+            box-shadow: 
+                2px 4px 6px rgba(0,0,0,0.3),
+                5px 15px 20px rgba(0,0,0,0.4),
+                10px 25px 30px rgba(0,0,0,0.5);
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            transition: opacity 0.5s ease-out;
+        }
+        
+        .evidence-item:active {
+            cursor: grabbing;
+        }
+
+        .sticky-note {
+            background: linear-gradient(135deg, #fef08a 0%, #eab308 100%);
+        }
+
+        .newspaper {
+            background: linear-gradient(to bottom right, #f5f5f5, #d4d4d4);
+            color: #222;
+        }
+        
+        .masking-tape {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-2deg);
+            width: 80px;
+            height: 25px;
+            background-color: rgba(235, 235, 220, 0.6);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            border-left: 2px dashed rgba(0,0,0,0.1);
+            border-right: 2px dashed rgba(0,0,0,0.1);
+            z-index: 15;
+            backdrop-filter: blur(1px);
+        }
+
+        .polaroid {
+            background: #fff;
+            padding: 10px 10px 40px 10px;
+        }
+        .polaroid-img {
+            background: #111;
+            width: 100%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+        
+        #string-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15; 
+            filter: drop-shadow(2px 5px 3px rgba(0,0,0,0.6));
+        }
+        
+        .string-path {
+            stroke: #b22222;
+            stroke-width: 3px;
+            fill: none;
+            stroke-dasharray: 8 2;
+            opacity: 0.9;
+        }
+        
+        .temp-string-path {
+            stroke: #ff4444;
+            stroke-width: 3px;
+            fill: none;
+            stroke-dasharray: 4 4;
+            opacity: 0.7;
+        }
+
+        /* Magnifying Glass Tool */
+        .magnifying-glass {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 8px solid #2d1b15;
+            box-shadow: 
+                0 15px 25px rgba(0,0,0,0.6),
+                inset 0 0 20px rgba(255,255,255,0.4),
+                inset 0 0 10px rgba(0,0,0,0.5);
+            cursor: grab;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .magnifying-glass:active {
+            cursor: grabbing;
+        }
+        .magnifying-glass-lens {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            overflow: hidden;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: brightness(1.2) contrast(1.1);
+        }
+        .magnifying-glass-clone-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: 0 0;
+            pointer-events: none;
+        }
+        .magnifying-glass::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), transparent 50%);
+            pointer-events: none;
+            z-index: 2;
+        }
+        .magnifying-glass-handle {
+            position: absolute;
+            bottom: -90px;
+            right: -90px;
+            width: 35px;
+            height: 120px;
+            background: repeating-linear-gradient(
+                to right,
+                #4e342e,
+                #4e342e 2px,
+                #3e2723 4px,
+                #3e2723 6px
+            );
+            border-radius: 15px;
+            transform: rotate(-45deg);
+            transform-origin: top left;
+            box-shadow: 4px 4px 8px rgba(0,0,0,0.6), inset 2px 2px 5px rgba(255,255,255,0.1);
+            border: 2px solid #1a0f0c;
+        }
+
+        /* Case Folders */
+        .case-folder {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            height: 140px;
+            background: #e4c58b;
+            border-radius: 5px 20px 5px 5px;
+            box-shadow: 
+                -2px -2px 10px rgba(0,0,0,0.5),
+                5px 5px 15px rgba(0,0,0,0.6);
+            z-index: 45;
+            cursor: pointer;
+            transition: transform 0.2s, top 0.2s, right 0.2s;
+            border: 1px solid #c2a05d;
+        }
+        .case-folder::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(to bottom right, rgba(255,255,255,0.2), transparent, rgba(0,0,0,0.1));
+            border-radius: inherit;
+            pointer-events: none;
+        }
+        .case-folder::after {
+            content: 'TOP SECRET';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            color: rgba(200, 0, 0, 0.6);
+            font-family: 'Special Elite', monospace;
+            font-size: 24px;
+            font-weight: bold;
+            border: 3px solid rgba(200, 0, 0, 0.6);
+            padding: 5px 10px;
+            pointer-events: none;
+            mix-blend-mode: multiply;
+        }
+        .case-folder:hover {
+            transform: translateY(-10px) rotate(2deg);
+        }
+        .folder-stack-1 { bottom: 15px; right: 15px; transform: rotate(-5deg); z-index: 44; background: #d4b57b;}
+        .folder-stack-2 { bottom: 10px; right: 10px; transform: rotate(3deg); z-index: 43; background: #c4a56b;}
+
+        /* Pin Cup */
+        .pin-cup {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 60px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px 5px 20px 20px;
+            box-shadow: 
+                inset 0 0 15px rgba(255, 255, 255, 0.1),
+                5px 5px 15px rgba(0, 0, 0, 0.6);
+            z-index: 45;
+            cursor: pointer;
+            backdrop-filter: blur(2px);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 5px;
+            transition: transform 0.1s;
+            overflow: hidden;
+        }
+        .pin-cup:active {
+            transform: scale(0.95);
+        }
+        .pin-cup::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            height: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .pin-cup-pins {
+            width: 100%;
+            height: 60%;
+            background: 
+                radial-gradient(circle at 30% 30%, #ef4444 3px, transparent 4px),
+                radial-gradient(circle at 70% 60%, #3b82f6 3px, transparent 4px),
+                radial-gradient(circle at 40% 80%, #f3f4f6 3px, transparent 4px),
+                radial-gradient(circle at 80% 20%, #ef4444 3px, transparent 4px),
+                radial-gradient(circle at 20% 50%, #f3f4f6 3px, transparent 4px),
+                radial-gradient(circle at 50% 40%, #ef4444 3px, transparent 4px),
+                radial-gradient(circle at 60% 80%, #3b82f6 3px, transparent 4px);
+            opacity: 0.9;
+        }
+
+        /* Editable Notes */
+        .editable-content {
+            outline: none;
+            min-height: 40px;
+            cursor: text;
+        }
+        .editable-content:focus {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+        .editable-content:empty:before {
+            content: "Type here...";
+            color: rgba(0,0,0,0.4);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="text-on-surface h-screen w-screen overflow-hidden selection:bg-primary selection:text-on-primary font-report-body flex items-center justify-center">
+<main class="relative w-[90vw] h-[90vh] max-w-7xl cork-texture border-8 border-[#2d1b15] rounded-sm z-10 overflow-hidden shadow-2xl" id="board-container">
+<svg id="cable-layer">
+<path fill="none" id="lamp-cable" stroke="#111" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"></path>
+</svg>
+<div class="desk-lamp" id="desk-lamp"></div>
+<div class="absolute inset-0 spotlight-overlay z-40" id="spotlight-overlay"></div>
+<header class="absolute top-0 left-0 w-full p-6 z-30 pointer-events-none opacity-40 mix-blend-overlay">
+<h1 class="font-case-file-header text-case-file-header-mobile md:text-case-file-header text-black uppercase tracking-tighter shadow-sm" id="case-title">CASE FILE: #7402</h1>
+</header>
+<svg id="string-layer"></svg>
+<canvas class="absolute inset-0 z-10 pointer-events-none" id="drawing-canvas"></canvas><div class="absolute inset-0 z-20" id="board-canvas">
+<div class="evidence-item polaroid w-64 z-30 transform rotate-[-3deg]" id="item-1" style="top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-3deg);">
+<div class="pin red" data-item-id="item-1"></div>
+<div class="polaroid-img mb-4 relative z-10">
+<span class="material-symbols-outlined text-6xl drop-shadow-md">person_off</span>
+</div>
+<div class="font-handwritten-note text-handwritten-note text-gray-800 text-center relative z-10">John Doe - Suspect #1</div>
+</div>
+<div class="evidence-item sticky-note w-48 p-4 z-20 transform rotate-6" id="item-2" style="top: 25%; left: 25%; transform: translate(-50%, -50%) rotate(6deg);">
+<div class="pin blue" data-item-id="item-2"></div>
+<div class="font-permanent-marker text-[20px] leading-tight text-gray-900 mt-4 relative z-10 editable-content" spellcheck="false">
+                Found at the docks. 3:00 AM.<br/>
+                No signs of struggle.<br/>
+<span class="text-red-800 font-bold">Where is the briefcase?</span>
+</div>
+</div>
+<div class="evidence-item newspaper w-56 p-4 z-20 border border-gray-300 transform rotate-[-4deg]" id="item-3" style="top: 75%; left: 75%; transform: translate(-50%, -50%) rotate(-4deg);">
+<div class="masking-tape"></div>
+<div class="pin silver" data-item-id="item-3"></div>
+<div class="relative z-10">
+<h3 class="font-label-tag text-label-tag font-bold mb-2 text-center mt-4 border-b border-gray-400 pb-1 uppercase">Local Disappearance</h3>
+<p class="font-report-body text-xs text-justify">
+                    Authorities remain baffled by the sudden vanishing of a local businessman. Friends and family report no unusual behavior prior to the incident.
+                </p>
+</div>
+</div>
+</div>
+<!-- Magnifying Glass Tool -->
+<div class="magnifying-glass evidence-item" id="mag-glass" style="top: 10%; left: 80%;">
+<div class="magnifying-glass-handle"></div>
+<div class="magnifying-glass-lens">
+<div class="magnifying-glass-clone-container" id="mag-clone-container"></div>
+</div>
+</div>
+<!-- Case Folders -->
+<div class="case-folder folder-stack-2"></div>
+<div class="case-folder folder-stack-1"></div>
+<div class="case-folder" id="case-selector" title="Load New Case"></div>
+<!-- Pin Cup -->
+<div class="pin-cup">
+<div class="pin-cup-pins"></div>
+</div>
+<div class="absolute bottom-5 left-24 w-32 h-32 sticky-note shadow-md cursor-grab z-45 border-b-4 border-r-4 border-black/20 flex items-center justify-center" id="note-pad" title="Drag to peel a note"><span class="font-label-tag text-black/40 uppercase text-xs pointer-events-none">Sticky Pad</span></div><div class="evidence-item w-8 h-40 z-50 cursor-grab" id="fountain-pen" style="top: 70%; left: 10%; transform: rotate(45deg);"><svg class="w-full h-full drop-shadow-lg" viewbox="0 0 40 200"><path d="M10 180 L30 180 L35 40 Q20 10 5 40 Z" fill="#1a1a1a"></path><path d="M15 180 L25 180 L25 195 L20 200 L15 195 Z" fill="#444"></path><rect fill="#d4af37" height="10" width="16" x="12" y="50"></rect><path d="M20 10 L20 30" stroke="#555" stroke-width="1"></path></svg></div><button class="absolute bottom-5 left-64 z-50 bg-surface-container-high text-on-surface px-3 py-1 rounded-sm font-label-tag text-xs border border-outline hover:bg-primary hover:text-on-primary transition-colors" id="clear-drawings">Clear Board</button></main>
+<script>
+    console.log("Hyper-Realistic Cinematic Detective Board Initialized.");
+
+    const boardCanvas = document.getElementById('board-canvas');
+    const boardContainer = document.getElementById('board-container');
+    const stringLayer = document.getElementById('string-layer');
+    const deskLamp = document.getElementById('desk-lamp');
+    const spotlightOverlay = document.getElementById('spotlight-overlay');
+    const lampCable = document.getElementById('lamp-cable');
+    const caseSelector = document.getElementById('case-selector');
+    const caseTitle = document.getElementById('case-title');
+    const pinCup = document.getElementById('pin-cup');
+    const magGlass = document.getElementById('mag-glass');
+    const magCloneContainer = document.getElementById('mag-clone-container');
+    
+    let activePin = null;
+    let connections = [];
+    let tempPath = null;
+    let dragItem = null;
+    let offsetX = 0;
+    let offsetY = 0;
+    let isDraggingLamp = false;
+    let lampOffsetX = 0;
+    let lampOffsetY = 0;
+    let noteCounter = 100;
+    
+    // Improved pin center tracking
+    function getPinCenter(pin) {
+        const rect = pin.getBoundingClientRect();
+        const containerRect = boardContainer.getBoundingClientRect();
+        return {
+            x: rect.left - containerRect.left + rect.width / 2,
+            y: rect.top - containerRect.top + rect.height / 2
+        };
+    }
+    
+    function createPathString(start, end) {
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        const sag = Math.min(dist * 0.2, 50); 
+        const mx = (start.x + end.x) / 2;
+        const my = (start.y + end.y) / 2 + sag;
+        return `M ${start.x} ${start.y} Q ${mx} ${my} ${end.x} ${end.y}`;
+    }
+    
+    function renderStrings() {
+        stringLayer.innerHTML = '';
+        connections.forEach(conn => {
+            const pin1 = document.querySelector(`.pin[data-item-id="${conn.from}"]`);
+            const pin2 = document.querySelector(`.pin[data-item-id="${conn.to}"]`);
+            if(pin1 && pin2) {
+                const start = getPinCenter(pin1);
+                const end = getPinCenter(pin2);
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.setAttribute('d', createPathString(start, end));
+                path.classList.add('string-path');
+                stringLayer.appendChild(path);
+            }
+        });
+        
+        if (tempPath && activePin) {
+            stringLayer.appendChild(tempPath);
+        }
+    }
+
+    function updateLampCable() {
+        const containerRect = boardContainer.getBoundingClientRect();
+        const lampRect = deskLamp.getBoundingClientRect();
+        
+        const startX = containerRect.width / 2;
+        const startY = 0;
+        
+        const endX = lampRect.left - containerRect.left + lampRect.width / 2;
+        const endY = lampRect.top - containerRect.top + 10;
+        
+        const dx = endX - startX;
+        const dy = endY - startY;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        const sag = Math.max(50, dist * 0.3);
+        
+        const mx = (startX + endX) / 2;
+        const my = (startY + endY) / 2 + sag;
+        
+        lampCable.setAttribute('d', `M ${startX} ${startY} Q ${mx} ${my} ${endX} ${endY}`);
+    }
+
+    function updateMagnifyingGlass() {
+        // Clone board items for magnification
+        magCloneContainer.innerHTML = boardCanvas.innerHTML;
+        const magRect = magGlass.getBoundingClientRect();
+        const containerRect = boardContainer.getBoundingClientRect();
+        
+        const magCenterX = magRect.left - containerRect.left + magRect.width / 2;
+        const magCenterY = magRect.top - containerRect.top + magRect.height / 2;
+        
+        const scale = 1.5;
+        const tx = -magCenterX * scale + magRect.width / 2;
+        const ty = -magCenterY * scale + magRect.height / 2;
+        
+        magCloneContainer.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+    }
+
+    function attachPinListener(pin) {
+        pin.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!activePin) {
+                activePin = pin;
+                pin.classList.add('active');
+                tempPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                tempPath.classList.add('temp-string-path');
+                renderStrings();
+            } else if (activePin !== pin) {
+                const fromId = activePin.getAttribute('data-item-id');
+                const toId = pin.getAttribute('data-item-id');
+                
+                const exists = connections.some(c => 
+                    (c.from === fromId && c.to === toId) || 
+                    (c.from === toId && c.to === fromId)
+                );
+                
+                if(!exists) {
+                    connections.push({from: fromId, to: toId});
+                }
+                
+                activePin.classList.remove('active');
+                activePin = null;
+                tempPath = null;
+                renderStrings();
+            } else {
+                activePin.classList.remove('active');
+                activePin = null;
+                tempPath = null;
+                renderStrings();
+            }
+        });
+    }
+
+    function attachDragListener(item) {
+        item.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('pin') || e.target.closest('.pin')) return;
+            // Prevent drag if clicking inside an active editable area
+            if (e.target.getAttribute('contenteditable') === 'true' || e.target.closest('[contenteditable="true"]')) return;
+            
+            dragItem = item;
+            
+            let maxZ = 20;
+            document.querySelectorAll('.evidence-item').forEach(i => {
+                const z = parseInt(window.getComputedStyle(i).zIndex) || 20;
+                if(z > maxZ && i.id !== 'mag-glass') maxZ = z;
+            });
+            if (dragItem.id !== 'mag-glass') {
+                dragItem.style.zIndex = maxZ + 1;
+            }
+
+            const rect = dragItem.getBoundingClientRect();
+            const containerRect = boardContainer.getBoundingClientRect();
+            
+            if(!dragItem.style.left || dragItem.style.left.includes('%')) {
+                dragItem.style.left = `${rect.left - containerRect.left}px`;
+                dragItem.style.top = `${rect.top - containerRect.top}px`;
+                const currentTransform = dragItem.style.transform;
+                const rotateMatch = currentTransform.match(/rotate\(([^)]+)\)/);
+                const rotation = rotateMatch ? rotateMatch[0] : 'rotate(0deg)';
+                dragItem.style.transform = `translate(0, 0) ${rotation}`;
+            }
+
+            offsetX = e.clientX - containerRect.left - parseInt(dragItem.style.left || 0);
+            offsetY = e.clientY - containerRect.top - parseInt(dragItem.style.top || 0);
+        });
+    }
+
+    function setupEditable(note) {
+        note.addEventListener('dblclick', (e) => {
+            e.stopPropagation();
+            const editableContent = note.querySelector('.editable-content');
+            if (editableContent) {
+                editableContent.setAttribute('contenteditable', 'true');
+                editableContent.focus();
+                
+                // Select all text if it's the default text
+                if(editableContent.textContent.trim() === 'New Note') {
+                    document.execCommand('selectAll', false, null);
+                }
+            }
+        });
+
+        const editableContent = note.querySelector('.editable-content');
+        if (editableContent) {
+            editableContent.addEventListener('blur', () => {
+                editableContent.removeAttribute('contenteditable');
+                updateMagnifyingGlass();
+            });
+            editableContent.addEventListener('input', () => {
+                // Update mag glass as they type, throttle slightly if needed
+                updateMagnifyingGlass();
+            });
+        }
+    }
+
+    function initPins() {
+        document.querySelectorAll('.pin').forEach(attachPinListener);
+    }
+
+    function initDraggables() {
+        document.querySelectorAll('.evidence-item').forEach(attachDragListener);
+    }
+
+    function initEditables() {
+        document.querySelectorAll('.sticky-note').forEach(setupEditable);
+    }
+
+    // Dragging Logic
+    boardContainer.addEventListener('mousemove', (e) => {
+        const containerRect = boardContainer.getBoundingClientRect();
+        const mouseX = e.clientX - containerRect.left;
+        const mouseY = e.clientY - containerRect.top;
+
+        if (activePin && tempPath) {
+            const start = getPinCenter(activePin);
+            tempPath.setAttribute('d', createPathString(start, {x: mouseX, y: mouseY}));
+        }
+        
+        if (dragItem) {
+            let newX = mouseX - offsetX;
+            let newY = mouseY - offsetY;
+            
+            const currentTransform = dragItem.style.transform;
+            const rotateMatch = currentTransform.match(/rotate\(([^)]+)\)/);
+            const rotation = rotateMatch ? rotateMatch[0] : 'rotate(0deg)';
+            
+            dragItem.style.left = `${newX}px`;
+            dragItem.style.top = `${newY}px`;
+            dragItem.style.transform = `translate(0, 0) ${rotation}`; 
+            
+            if (dragItem.id === 'mag-glass') {
+                updateMagnifyingGlass();
+            } else {
+                renderStrings();
+                updateMagnifyingGlass();
+            }
+        }
+
+        if (isDraggingLamp) {
+            const lampWidth = deskLamp.offsetWidth;
+            const lampHeight = deskLamp.offsetHeight;
+            let newLeft = mouseX - lampOffsetX + lampWidth / 2;
+            let newTop = mouseY - lampOffsetY;
+            
+            deskLamp.style.left = `${newLeft}px`;
+            deskLamp.style.top = `${newTop}px`;
+            
+            const pctX = (newLeft / containerRect.width) * 100;
+            const pctY = ((newTop + lampHeight) / containerRect.height) * 100;
+            
+            spotlightOverlay.style.background = `conic-gradient(from 150deg at ${pctX}% ${pctY}%, rgba(0,0,0,0.9) 0deg, rgba(255,255,230,0.25) 30deg, rgba(255,255,240,0.3) 60deg, rgba(0,0,0,0.9) 90deg, rgba(0,0,0,0.95) 360deg)`;
+            
+            updateLampCable();
+        }
+    });
+
+    // Lamp Draggable
+    deskLamp.addEventListener('mousedown', (e) => {
+        isDraggingLamp = true;
+        const rect = deskLamp.getBoundingClientRect();
+        lampOffsetX = e.clientX - rect.left;
+        lampOffsetY = e.clientY - rect.top;
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (dragItem || isDraggingLamp) {
+            updateMagnifyingGlass();
+        }
+        dragItem = null;
+        isDraggingLamp = false;
+    });
+
+    // Pin Cup Logic
+    pinCup.addEventListener('click', () => {
+        noteCounter++;
+        const newId = `note-${noteCounter}`;
+        const rotation = Math.random() * 20 - 10;
+        
+        const pinColors = ['red', 'blue', 'silver'];
+        const pinColor = pinColors[Math.floor(Math.random() * pinColors.length)];
+
+        const newItem = document.createElement('div');
+        newItem.className = `evidence-item sticky-note w-48 p-4 z-30 transform rotate-[${rotation}deg]`;
+        newItem.id = newId;
+        newItem.style.top = `30%`;
+        newItem.style.left = `20%`;
+        newItem.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
+        
+        newItem.innerHTML = `
+            <div class="pin ${pinColor}" data-item-id="${newId}"></div>
+            <div class="font-permanent-marker text-[20px] leading-tight text-gray-900 mt-4 relative z-10 editable-content" spellcheck="false">New Note</div>
+        `;
+        
+        boardCanvas.appendChild(newItem);
+        
+        attachDragListener(newItem);
+        attachPinListener(newItem.querySelector('.pin'));
+        setupEditable(newItem);
+        
+        updateMagnifyingGlass();
+    });
+
+    // Case Selector Logic
+    caseSelector.addEventListener('click', () => {
+        const currentEvidence = document.querySelectorAll('.evidence-item:not(#mag-glass)');
+        currentEvidence.forEach(item => {
+            item.style.opacity = '0';
+        });
+        stringLayer.innerHTML = '';
+        connections = [];
+
+        setTimeout(() => {
+            currentEvidence.forEach(item => item.remove());
+            
+            const newCaseNum = Math.floor(1000 + Math.random() * 9000);
+            caseTitle.textContent = `CASE FILE: #${newCaseNum}`;
+            
+            const newItem = document.createElement('div');
+            newItem.className = 'evidence-item polaroid w-64 z-30 transform rotate-[' + (Math.random() * 10 - 5) + 'deg]';
+            newItem.id = 'new-item-1';
+            newItem.style.top = '40%';
+            newItem.style.left = '50%';
+            newItem.style.transform = 'translate(-50%, -50%) rotate(' + (Math.random() * 10 - 5) + 'deg)';
+            newItem.innerHTML = `
+                <div class="pin silver" data-item-id="new-item-1"></div>
+                <div class="polaroid-img mb-4 relative z-10" style="background:#555;">
+                    <span class="material-symbols-outlined text-6xl text-white drop-shadow-md">question_mark</span>
+                </div>
+                <div class="font-handwritten-note text-handwritten-note text-gray-800 text-center relative z-10">New Lead</div>
+            `;
+            boardCanvas.appendChild(newItem);
+            
+            attachDragListener(newItem);
+            attachPinListener(newItem.querySelector('.pin'));
+            updateMagnifyingGlass();
+        }, 600);
+    });
+
+    window.addEventListener('resize', () => {
+        renderStrings();
+        updateLampCable();
+        updateMagnifyingGlass();
+    });
+    
+    initPins();
+    initDraggables();
+    initEditables();
+    renderStrings();
+    updateLampCable();
+    
+    // Initial magnification render
+    setTimeout(updateMagnifyingGlass, 100);
+</script>
+</body></html>

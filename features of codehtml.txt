@@ -1,0 +1,18 @@
+The current version of your Detective Evidence Board has evolved into a highly interactive, tactile forensic environment. Here is the full list of features currently implemented:
+
+🖋️ Drawing & Annotation
+Draggable Pen: A physical pen tool that you can move freely to draw, circle, or write directly on the board and evidence.
+Diegetic Eraser: A "Clear Board" function to wipe the slate clean when your sketches or markings get too cluttered.
+📝 Dynamic Evidence Management
+Peelable Sticky Note Pad: A physical stack of yellow notes. You can "peel" a new note by dragging it from the stack and placing it anywhere on the board.
+Typeable Surfaces: Double-click any sticky note to type your observations in a messy, handwritten font that fits the detective aesthetic.
+Tactile Assets: Polaroids, newspaper clippings, and folders that are all individually draggable with realistic physical layering.
+💡 Interactive Lighting & Physics
+Fully Mobile Lamp: A draggable light source with an elastic power cable that stretches and sags as you move the bulb to illuminate dark corners.
+Dynamic Spotlight: A cinematic conical beam and central hotspot that update in real-time, casting the rest of the investigation into deep shadow.
+Red String Connection System: A system to "tie" red yarn between thumbtacks. The strings are physics-aware, stretching and pivoting automatically as you move the evidence they are attached to.
+🔍 Forensic Tools
+Functional Magnifying Glass: A draggable tool with a wooden handle. Passing the lens over small text or photos physically magnifies the content beneath it for closer inspection.
+Pin Cup: A glass jar serving as a diegetic container for your investigation hardware.
+Case Navigation: A stack of "Top Secret" manila folders used to switch between different investigation files.
+How would you like to proceed? We could add a Polaroid Camera to snap and "develop" new suspect photos, or perhaps an Ink Stamp for marking files as "Closed" or "Under Review."

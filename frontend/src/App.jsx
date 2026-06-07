@@ -1,11 +1,11 @@
-import InvestigativeCanvas from './components/InvestigativeCanvas';
+import DetectiveBoard from './components/DetectiveBoard';
 
 function App() {
   return (
     <div className="App">
-      <InvestigativeCanvas />
+      <DetectiveBoard />
     </div>
   );
 }
 
-export default App;
+export default App;
